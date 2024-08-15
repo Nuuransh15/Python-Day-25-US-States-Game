@@ -1,6 +1,7 @@
 import pandas
 import turtle
 
+# --------------- CONSTANTS --------------- #
 STATES_DATA_FILE = "50_states.csv"
 MISSED_STATES_FILE = "missed_states.csv"
 STATE_COL = "state"
@@ -10,7 +11,7 @@ ALIGN = "center"
 FONT = ("calibri", 8, 'normal')
 EXIT_GAME = "exit"
 
-
+# --------------- Initialise Screen and Variables --------------- #
 screen = turtle.Screen()
 screen.title("U.S. States Game")
 image = "blank_states_img.gif"
@@ -28,6 +29,7 @@ all_states = [state.lower() for state in data[STATE_COL].values]
 total_states = len(all_states)
 
 
+# --------------- HELPER FUNCTIONS --------------- #
 def write_missed_states(correct_guesses):
     """
     Function to write the users missed states into a file for them to learn later.
@@ -35,12 +37,6 @@ def write_missed_states(correct_guesses):
     :return: None
     """
     missed_states = [state for state in data[STATE_COL].values if state not in correct_guesses]
-    # for state in data[STATE_COL].values:
-    #     if state not in correct_guesses:
-    #         missed_states.append(state)
-    # missed_states_dict = {
-    #     "Missing States": missed_states
-    # }
     missing_states_df = pandas.DataFrame(missed_states)
     missing_states_df.to_csv(MISSED_STATES_FILE)
 
@@ -58,22 +54,27 @@ def state_not_guessed(guess: str, guessed: list) -> bool:
     return True
 
 
+# --------------- MAIN EXECUTION --------------- #
 first_attempt = True
 
 while len(guessed_states) < total_states:
 
+    # First attempt will display different title
     if first_attempt:
         pop_up_title = f"Guess the State"
         first_attempt = False
     else:
         pop_up_title = f"{len(guessed_states)}/{total_states} States Correct"
 
+    # Pop-up asking user to enter another state
     answer_state = screen.textinput(title=pop_up_title, prompt="What's another state's name?").lower()
 
+    # exit game if user types 'exit'
     if answer_state.lower() == EXIT_GAME:
         write_missed_states(guessed_states)
         exit()
 
+    # check guessed state against the data and previously guessed states
     for state in data[STATE_COL].values:
 
         if answer_state == state.lower() and state_not_guessed(answer_state, guessed_states):
